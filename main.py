@@ -108,6 +108,10 @@ class Draw:
 
     def make_task_node(self, step, token):
         name = step.get("TaskName")
+        if name = "Common-run_mp":
+            color = "cyan4"
+        else:
+            color = "blue"
         label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
         label_end = "</TABLE>>"
         
@@ -123,7 +127,7 @@ class Draw:
         
         label = "{}{}{}".format(label_start, label_body ,label_end)
        
-        self.g.node(token, label, shape= 'plaintext', color='blue')
+        self.g.node(token, label, shape= 'plaintext', color=color)
     
     def make_container_node(self, cont, token):
         label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
