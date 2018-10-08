@@ -2,7 +2,7 @@ from graphviz import Graph, nohtml
 import couchdb
 import json
 import sys
-
+import argparse
 
 class DB:
     url = 'http://localhost:5984'
@@ -31,10 +31,11 @@ class DB:
 class Draw:
 
     def __init__(self, mpd_doc):
-
+        self.id = mpd_doc.get("_id")
         self.g =  Graph('structs', format='pdf')#Digraph('structs', filename='mpd', engine='dot')
-        self.g.attr(rankdir='TB')
+        self.g.attr(rankdir='TB',ranksep='3', nodesep='3')
         self.g.node_attr.update( fontsize='80')
+        self.g.edge_attr.update(   penwidth = '10')
         self.mpd = mpd_doc.get('Mp', {})
         self.name = self.mpd.get('Name').replace(' ','_')
         self.definitions = self.mpd.get('Definitions', [])
@@ -65,8 +66,6 @@ class Draw:
                     self.make_task_node( step, task_token)
                     self.g.edge(defin_token, task_token)
 
-       
-
         for cont_i, cont in enumerate(self.container):
             cont_token = "cont_{}".format(cont_i)
             self.g.edge('Name',  cont_token)
@@ -85,6 +84,7 @@ class Draw:
         label = str(label)
         label = label.replace(">", "[greater than]")
         label = label.replace("<", "[less than]")
+        label = label.replace("&", "[and]")
 
         return label
 
@@ -108,7 +108,7 @@ class Draw:
 
     def make_task_node(self, step, token):
         name = step.get("TaskName")
-        if name = "Common-run_mp":
+        if name == "Common-run_mp":
             color = "cyan4"
         else:
             color = "blue"
@@ -119,7 +119,7 @@ class Draw:
         if 'Replace' in step:
             for k, v in step.get('Replace').items():
                 
-                label_body = "{}<TR><TD>{}: {}</TD></TR>".format(label_body,k, self.safe_label(v))
+                label_body = "{}<TR><TD>{}: <b>{}</b></TD></TR>".format(label_body,k, self.safe_label(v))
                 if k == '@definitionclass':
                     if v in self.dc_dict:
                         for h in self.dc_dict[v]:
@@ -140,20 +140,31 @@ class Draw:
         self.g.node(token, label, shape='plaintext', color='lightgoldenrod4')
 
     def make_mpd_node(self, mpd, token):
-        title = self.safe_label(mpd.get('Name'))
-        descr = self.safe_label(mpd.get('Description'))
-        label = "{}\n{}".format(title, descr)
-        self.g.node(token, label, shape='doublecircle', color='blue')
+        title = mpd.get('Name')
+        descr =mpd.get('Description')
+
+        label_start="<<TABLE BORDER='30' CELLBORDER='10' CELLSPACING='50'>"
+        label_end = "</TABLE>>"
+        
+        label_title  = "<TR><TD>measurement definition name: <b>{}</b></TD></TR>".format(self.safe_label(title))
+        title_descr = "<TR><TD>description: <i>{}</i></TD></TR>".format(self.safe_label( descr))
       
+        label = "{}{}{}{}".format(label_start,label_title,title_descr,label_end)
+        self.g.node(token, label, shape='plaintext', color='blueviolet')
+
 
     def render(self):
-        self.g.render(filename=self.name)
+        self.g.render(filename=self.id)
 
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--doc', help='id of the document which should be drawn')
+    args = parser.parse_args()
+    print()
     db = DB()
-    mp = db.get_doc("mpd-se3-calib")
+    mp = db.get_doc(args.doc)
     draw = Draw(mp)
     draw.loop_all() 
     draw.render()
