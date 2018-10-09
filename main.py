@@ -1,4 +1,4 @@
-from graphviz import Graph, nohtml
+from graphviz import Digraph, nohtml
 import couchdb
 import json
 import sys
@@ -32,7 +32,7 @@ class Draw:
 
     def __init__(self, mpd_doc):
         self.id = mpd_doc.get("_id")
-        self.g =  Graph('structs', format='pdf')#Digraph('structs', filename='mpd', engine='dot')
+        self.g = Digraph('structs', format='pdf')#Digraph('structs', filename='mpd', engine='dot')
         self.g.attr(rankdir='TB',ranksep='3', nodesep='3')
         self.g.node_attr.update( fontsize='80')
         self.g.edge_attr.update(   penwidth = '10')
@@ -43,7 +43,9 @@ class Draw:
         self.C = len(self.container)
         self.D = len(self.definitions)
         self.dc_dict={}
-
+        self.label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
+        self.label_end = "</TABLE>>"
+        
     def loop_all(self):
 
         self.make_mpd_node(self.mpd, 'Name')
@@ -64,7 +66,11 @@ class Draw:
                 for par_i, step in enumerate(steps):
                     task_token = "defin_step_{}_{}_{}".format(defin_i, seq_i, par_i)
                     self.make_task_node( step, task_token)
-                    self.g.edge(defin_token, task_token)
+                    if seq_i == 0:
+                        self.g.edge(defin_token, "{}:f1".format(task_token))
+                    else:
+                        self.g.edge( "defin_step_{}_{}_{}".format(defin_i, seq_i-1,0), "{}:f1".format(task_token))
+                    #self.g.edge(defin_token, "{}:f1".format(task_token))
 
         for cont_i, cont in enumerate(self.container):
             cont_token = "cont_{}".format(cont_i)
@@ -75,9 +81,9 @@ class Draw:
                     task_token = "cont_step_{}_{}_{}".format(cont_i,seq_i,par_i)
                     self.make_task_node(step, task_token)
                     if seq_i == 0:
-                        self.g.edge(cont_token, task_token)
+                        self.g.edge(cont_token, "{}:f1".format(task_token))
                     else:
-                        self.g.edge( "cont_step_{}_{}_{}".format(cont_i,seq_i-1,0), task_token)
+                        self.g.edge( "cont_step_{}_{}_{}".format(cont_i, seq_i-1,0), "{}:f1".format(task_token))
 
     def safe_label(self, label):
         
@@ -92,64 +98,59 @@ class Draw:
         name = defin.get('DefinitionClass')
         condition = defin.get('Condition')
         descr = defin.get('ShortDescr')
-        label_body = "<TR><TD>definition class: <b>{}</b></TD></TR>".format(self.safe_label(name))
-        label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
-        label_end = "</TABLE>>"
+        label_body = "<TR><TD PORT='f1'>definition class: <b>{}</b></TD></TR>".format(self.safe_label(name))
+        
         for cond in condition:
             a = cond.get('ExchangePath')
             b = cond.get('Methode')
             c = cond.get('Value')
             label_body = "{}<TR><TD>ExchPath:  <b>{}</b></TD></TR> <TR><TD>operator: <b>{}</b></TD></TR> <TR><TD>Value:  <b>{}</b></TD></TR>".format(label_body, a, b, c)
         
-        label = "{}{}{}".format(label_start, label_body ,label_end)
+        label = "{}{}{}".format(self.label_start, label_body, self.label_end)
        
-        self.g.node(token, label, shape= 'plaintext', color='lightgoldenrod4')
+        self.g.node(token, label, shape= 'plaintext', color='darkorchid')
 
 
     def make_task_node(self, step, token):
         name = step.get("TaskName")
+        color = "black"
+   
         if name == "Common-run_mp":
             color = "cyan4"
-        else:
+        if name == "Commons-select_definition":
             color = "blue"
-        label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
-        label_end = "</TABLE>>"
-        
-        label_body  = "<TR><TD>task name: <b>{}</b></TD></TR>".format(name)
+   
+
+        label_body  = "<TR><TD PORT='f1'>task name: <b>{}</b></TD></TR>".format(name)
         if 'Replace' in step:
             for k, v in step.get('Replace').items():
-                
-                label_body = "{}<TR><TD>{}: <b>{}</b></TD></TR>".format(label_body,k, self.safe_label(v))
+                label_body = "{}<TR><TD>replace <b>{}</b> by <b>{}</b></TD></TR>".format(label_body,k, self.safe_label(v))
                 if k == '@definitionclass':
                     if v in self.dc_dict:
                         for h in self.dc_dict[v]:
                             self.g.edge(token, "defin_{}_{}".format(v, h))
+
+        if 'Use' in step:
+            for k, v in step.get('Use').items():
+                label_body = "{}<TR><TD>use <b>{}</b> in <b>{}</b></TD></TR>".format(label_body, self.safe_label(v), k)
         
-        label = "{}{}{}".format(label_start, label_body ,label_end)
+        label = "{}{}{}".format(self.label_start, label_body, self.label_end)
        
         self.g.node(token, label, shape= 'plaintext', color=color)
     
     def make_container_node(self, cont, token):
-        label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
-        label_end = "</TABLE>>"
-        
-        label_title  = "<TR><TD>title: <b>{}</b></TD></TR>".format(self.safe_label(cont.get('Title')))
+        label_title  = "<TR><TD PORT='f1'>title: <b>{}</b></TD></TR>".format(self.safe_label(cont.get('Title')))
         title_descr = "<TR><TD>description: <i>{}</i></TD></TR>".format(self.safe_label(cont.get('Description')))
       
-        label = "{}{}{}{}".format(label_start,label_title,title_descr,label_end)
+        label = "{}{}{}{}".format(self.label_start,label_title,title_descr,self.label_end)
         self.g.node(token, label, shape='plaintext', color='lightgoldenrod4')
 
     def make_mpd_node(self, mpd, token):
         title = mpd.get('Name')
         descr =mpd.get('Description')
-
-        label_start="<<TABLE BORDER='30' CELLBORDER='10' CELLSPACING='50'>"
-        label_end = "</TABLE>>"
-        
-        label_title  = "<TR><TD>measurement definition name: <b>{}</b></TD></TR>".format(self.safe_label(title))
+        label_title  = "<TR><TD PORT='f1'>measurement definition name: <b>{}</b></TD></TR>".format(self.safe_label(title))
         title_descr = "<TR><TD>description: <i>{}</i></TD></TR>".format(self.safe_label( descr))
-      
-        label = "{}{}{}{}".format(label_start,label_title,title_descr,label_end)
+        label = "{}{}{}{}".format(self.label_start,label_title,title_descr, self.label_end)
         self.g.node(token, label, shape='plaintext', color='blueviolet')
 
 
@@ -162,7 +163,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--doc', help='id of the document which should be drawn')
     args = parser.parse_args()
-    print()
+ 
     db = DB()
     mp = db.get_doc(args.doc)
     draw = Draw(mp)
