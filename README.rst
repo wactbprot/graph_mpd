@@ -16,4 +16,4 @@ usage
 
     > cd /path/to/graph_mpd
     > source bin/activate
-    > python main.py --doc mpd-se3-valves
+    > python main.py --doc <document-id>
