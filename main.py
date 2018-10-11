@@ -31,17 +31,17 @@ class DB:
 class Draw:
 
     def __init__(self, mpd_doc):
+        
+        self.g = Digraph('structs', format='pdf', engine="dot")
+        self.g.node_attr.update(fontsize="80", fontname="Helvetica")
+        self.g.edge_attr.update( penwidth = '7')
+        
         self.id = mpd_doc.get("_id")
-        self.g = Digraph('structs', format='pdf')#Digraph('structs', filename='mpd', engine='dot')
-        self.g.attr(rankdir='TB',ranksep='3', nodesep='3')
-        self.g.node_attr.update( fontsize='80')
-        self.g.edge_attr.update(   penwidth = '10')
         self.mpd = mpd_doc.get('Mp', {})
         self.name = self.mpd.get('Name').replace(' ','_')
         self.definitions = self.mpd.get('Definitions', [])
         self.container = self.mpd.get('Container', [])
-        self.C = len(self.container)
-        self.D = len(self.definitions)
+
         self.dc_dict={}
         self.label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
         self.label_end = "</TABLE>>"
@@ -61,29 +61,32 @@ class Draw:
         for defin_i, defin in enumerate(self.definitions):
             dc = defin.get('DefinitionClass')
             defin_token = "defin_{}_{}".format(dc, defin_i)
-            self.make_defin_node(defin, defin_token)
-            for seq_i, steps in enumerate(defin.get('Definition')):
-                for par_i, step in enumerate(steps):
-                    task_token = "defin_step_{}_{}_{}".format(defin_i, seq_i, par_i)
-                    self.make_task_node( step, task_token)
-                    if seq_i == 0:
-                        self.g.edge(defin_token, "{}:f1".format(task_token))
-                    else:
-                        self.g.edge( "defin_step_{}_{}_{}".format(defin_i, seq_i-1,0), "{}:f1".format(task_token))
-                    #self.g.edge(defin_token, "{}:f1".format(task_token))
-
+            with self.g.subgraph(name='cluster_defin_{}'.format(defin_i)) as c:
+                c.attr(color='darkorchid', penwidth = '20')
+                self.make_defin_node(c, defin, defin_token)
+                for seq_i, steps in enumerate(defin.get('Definition')):
+                    for par_i, step in enumerate(steps):
+                        task_token = "defin_step_{}_{}_{}".format(defin_i, seq_i, par_i)
+                        self.make_task_node(c, step, task_token)
+                        if seq_i == 0:
+                            self.g.edge(defin_token, "{}:f1".format(task_token))
+                        else:
+                            self.g.edge( "defin_step_{}_{}_{}".format(defin_i, seq_i-1,0), "{}:f1".format(task_token))
+                        
         for cont_i, cont in enumerate(self.container):
             cont_token = "cont_{}".format(cont_i)
             self.g.edge('Name',  cont_token)
-            self.make_container_node(cont, cont_token)
-            for seq_i, steps in enumerate(cont.get('Definition')):
-                for par_i, step in enumerate(steps):
-                    task_token = "cont_step_{}_{}_{}".format(cont_i,seq_i,par_i)
-                    self.make_task_node(step, task_token)
-                    if seq_i == 0:
-                        self.g.edge(cont_token, "{}:f1".format(task_token))
-                    else:
-                        self.g.edge( "cont_step_{}_{}_{}".format(cont_i, seq_i-1,0), "{}:f1".format(task_token))
+            with self.g.subgraph(name='cluster_cont_{}'.format(cont_i)) as c:
+                c.attr(color='lightgoldenrod4',penwidth = '20')
+                self.make_container_node(c, cont, cont_token)
+                for seq_i, steps in enumerate(cont.get('Definition')):
+                    for par_i, step in enumerate(steps):
+                        task_token = "cont_step_{}_{}_{}".format(cont_i,seq_i,par_i)
+                        self.make_task_node(c ,step, task_token)
+                        if seq_i == 0:
+                            self.g.edge(cont_token, "{}:f1".format(task_token))
+                        else:
+                            self.g.edge( "cont_step_{}_{}_{}".format(cont_i, seq_i-1,0), "{}:f1".format(task_token))
 
     def safe_label(self, label):
         
@@ -94,7 +97,7 @@ class Draw:
 
         return label
 
-    def make_defin_node(self, defin, token):
+    def make_defin_node(self, graph, defin, token):
         name = defin.get('DefinitionClass')
         condition = defin.get('Condition')
         descr = defin.get('ShortDescr')
@@ -104,22 +107,23 @@ class Draw:
             a = cond.get('ExchangePath')
             b = cond.get('Methode')
             c = cond.get('Value')
-            label_body = "{}<TR><TD>ExchPath:  <b>{}</b></TD></TR> <TR><TD>operator: <b>{}</b></TD></TR> <TR><TD>Value:  <b>{}</b></TD></TR>".format(label_body, a, b, c)
+            label_body = """{}<TR><TD>ExchPath:  <b>{}</b></TD></TR> 
+                             <TR><TD>operator: <b>{}</b></TD></TR> 
+                             <TR><TD>Value:  <b>{}</b></TD></TR>""".format(label_body, a, b, c)
         
         label = "{}{}{}".format(self.label_start, label_body, self.label_end)
-       
-        self.g.node(token, label, shape= 'plaintext', color='darkorchid')
+        graph.node(token, label, shape= 'plaintext', color='darkorchid')
 
 
-    def make_task_node(self, step, token):
+    def make_task_node(self, graph, step, token):
         name = step.get("TaskName")
         color = "black"
    
         if name == "Common-run_mp":
             color = "cyan4"
+
         if name == "Commons-select_definition":
             color = "blue"
-   
 
         label_body  = "<TR><TD PORT='f1'>task name: <b>{}</b></TD></TR>".format(name)
         if 'Replace' in step:
@@ -136,14 +140,14 @@ class Draw:
         
         label = "{}{}{}".format(self.label_start, label_body, self.label_end)
        
-        self.g.node(token, label, shape= 'plaintext', color=color)
+        graph.node(token, label, shape= 'plaintext', color=color)
     
-    def make_container_node(self, cont, token):
+    def make_container_node(self, graph, cont, token):
         label_title  = "<TR><TD PORT='f1'>title: <b>{}</b></TD></TR>".format(self.safe_label(cont.get('Title')))
         title_descr = "<TR><TD>description: <i>{}</i></TD></TR>".format(self.safe_label(cont.get('Description')))
       
         label = "{}{}{}{}".format(self.label_start,label_title,title_descr,self.label_end)
-        self.g.node(token, label, shape='plaintext', color='lightgoldenrod4')
+        graph.node(token, label, shape='plaintext', color='lightgoldenrod4')
 
     def make_mpd_node(self, mpd, token):
         title = mpd.get('Name')
