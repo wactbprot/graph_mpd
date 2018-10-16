@@ -35,7 +35,7 @@ class Draw:
         self.g = Digraph('structs', format='pdf', engine="dot")
         self.g.node_attr.update(fontsize="80", fontname="Helvetica")
         self.g.edge_attr.update( penwidth = '7')
-        
+        self.mpd_token = "Name"
         self.id = mpd_doc.get("_id")
         self.mpd = mpd_doc.get('Mp', {})
         self.name = self.mpd.get('Name').replace(' ','_')
@@ -46,18 +46,17 @@ class Draw:
         self.label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
         self.label_end = "</TABLE>>"
         
-    def loop_all(self):
+    def loop_defin(self):
 
-        self.make_mpd_node(self.mpd, 'Name')
-        
         for defin_i, defin in enumerate(self.definitions):
-            dc = defin.get('DefinitionClass')
-            
+            dc = defin.get('DefinitionClass') 
             if dc in self.dc_dict:
                 self.dc_dict[dc].append(defin_i)
             else:
                 self.dc_dict[dc]= [defin_i]
 
+    def loop_all(self):        
+        
         for defin_i, defin in enumerate(self.definitions):
             dc = defin.get('DefinitionClass')
             defin_token = "defin_{}_{}".format(dc, defin_i)
@@ -77,7 +76,7 @@ class Draw:
             cont_token = "cont_{}".format(cont_i)
             self.g.edge('Name',  cont_token)
             with self.g.subgraph(name='cluster_cont_{}'.format(cont_i)) as c:
-                c.attr(color='lightgoldenrod4',penwidth = '20')
+                c.attr(color='lightgoldenrod4', penwidth = '20')
                 self.make_container_node(c, cont, cont_token)
                 for seq_i, steps in enumerate(cont.get('Definition')):
                     for par_i, step in enumerate(steps):
@@ -149,14 +148,13 @@ class Draw:
         label = "{}{}{}{}".format(self.label_start,label_title,title_descr,self.label_end)
         graph.node(token, label, shape='plaintext', color='lightgoldenrod4')
 
-    def make_mpd_node(self, mpd, token):
-        title = mpd.get('Name')
-        descr =mpd.get('Description')
+    def make_mpd_node(self):
+        title = self.mpd.get('Name')
+        descr = self.mpd.get('Description')
         label_title  = "<TR><TD PORT='f1'>measurement definition name: <b>{}</b></TD></TR>".format(self.safe_label(title))
         title_descr = "<TR><TD>description: <i>{}</i></TD></TR>".format(self.safe_label( descr))
         label = "{}{}{}{}".format(self.label_start,label_title,title_descr, self.label_end)
-        self.g.node(token, label, shape='plaintext', color='blueviolet')
-
+        self.g.node(self.mpd_token, label, shape='plaintext', color='blueviolet')
 
     def render(self):
         self.g.render(filename=self.id)
@@ -171,5 +169,9 @@ if __name__ == '__main__':
     db = DB()
     mp = db.get_doc(args.doc)
     draw = Draw(mp)
+    draw.make_mpd_node()
+
+    draw.loop_defin()
+
     draw.loop_all() 
     draw.render()
