@@ -7,7 +7,10 @@ digraph structs {
 	defin_step_0_0_0 -> defin_step_0_1_0:f1
 	subgraph cluster_defin_0 {
 		color=darkorchid penwidth=20
-		defin_prepair_fill_0 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>prepair_fill</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
+		defin_prepair_fill_0 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>prepair_fill</b></TD></TR>
+                        <TR><TD>description: Prepairs for filling pressures [less than] 133 Pa
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>Pa</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Value</b></TD></TR> 
                              <TR><TD>operator: <b>lt</b></TD></TR> 
@@ -20,7 +23,10 @@ digraph structs {
 	defin_step_1_0_0 -> defin_step_1_1_0:f1
 	subgraph cluster_defin_1 {
 		color=darkorchid penwidth=20
-		defin_prepair_fill_1 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>prepair_fill</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
+		defin_prepair_fill_1 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>prepair_fill</b></TD></TR>
+                        <TR><TD>description: Prepairs for filling pressures [less than] 1330 Pa
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>Pa</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Value</b></TD></TR> 
                              <TR><TD>operator: <b>gt</b></TD></TR> 
@@ -35,7 +41,10 @@ digraph structs {
 	defin_step_2_0_0 -> defin_step_2_1_0:f1
 	subgraph cluster_defin_2 {
 		color=darkorchid penwidth=20
-		defin_prepair_fill_2 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>prepair_fill</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
+		defin_prepair_fill_2 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>prepair_fill</b></TD></TR>
+                        <TR><TD>description: Prepairs for filling pressures [less than] 13300 Pa
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>Pa</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Value</b></TD></TR> 
                              <TR><TD>operator: <b>gt</b></TD></TR> 
@@ -50,7 +59,10 @@ digraph structs {
 	defin_step_3_0_0 -> defin_step_3_1_0:f1
 	subgraph cluster_defin_3 {
 		color=darkorchid penwidth=20
-		defin_prepair_fill_3 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>prepair_fill</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
+		defin_prepair_fill_3 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>prepair_fill</b></TD></TR>
+                        <TR><TD>description: Prepairs for filling pressures [less than] 133 kPa
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>Pa</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Value</b></TD></TR> 
                              <TR><TD>operator: <b>gt</b></TD></TR> 
@@ -67,7 +79,10 @@ digraph structs {
 	defin_reset_prepair_fill_4 -> defin_step_4_0_0:f1
 	subgraph cluster_defin_4 {
 		color=darkorchid penwidth=20
-		defin_reset_prepair_fill_4 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>reset_prepair_fill</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
+		defin_reset_prepair_fill_4 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>reset_prepair_fill</b></TD></TR>
+                        <TR><TD>description: resets filling pressures preparation
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>Pa</b></TD></TR></TABLE>> color=darkorchid shape=plaintext]
 		defin_step_4_0_0 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>task name: <b>Commons-select_definition</b></TD></TR><TR><TD>replace <b>@definitionclass</b> by <b>prepair_fill</b></TD></TR></TABLE>> color=blue shape=plaintext]
@@ -77,7 +92,10 @@ digraph structs {
 	defin_step_5_0_0 -> defin_step_5_1_0:f1
 	subgraph cluster_defin_5 {
 		color=darkorchid penwidth=20
-		defin_close_start_volume_5 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>close_start_volume</b></TD></TR><TR><TD>ExchPath:  <b>Expansion_name</b></TD></TR> 
+		defin_close_start_volume_5 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>close_start_volume</b></TD></TR>
+                        <TR><TD>description: Closes the starting volume depending on the stetting of Exchange/Expansion_name
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Expansion_name</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>f_s</b></TD></TR></TABLE>> color=darkorchid shape=plaintext]
 		defin_step_5_0_0 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>task name: <b>Common-run_mp</b></TD></TR><TR><TD>replace <b>@descr</b> by <b>close valve at node 1</b></TD></TR><TR><TD>replace <b>@mpdef</b> by <b>mpd-se3-servo</b></TD></TR><TR><TD>replace <b>@conttitle</b> by <b>c1</b></TD></TR></TABLE>> color=cyan4 shape=plaintext]
@@ -88,7 +106,10 @@ digraph structs {
 	defin_step_6_0_0 -> defin_step_6_1_0:f1
 	subgraph cluster_defin_6 {
 		color=darkorchid penwidth=20
-		defin_close_start_volume_6 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>close_start_volume</b></TD></TR><TR><TD>ExchPath:  <b>Expansion_name</b></TD></TR> 
+		defin_close_start_volume_6 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>close_start_volume</b></TD></TR>
+                        <TR><TD>description: Closes the starting volume depending on the stetting of Exchange/Expansion_name
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Expansion_name</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>f_m</b></TD></TR></TABLE>> color=darkorchid shape=plaintext]
 		defin_step_6_0_0 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>task name: <b>Common-run_mp</b></TD></TR><TR><TD>replace <b>@descr</b> by <b>close valve at node 3</b></TD></TR><TR><TD>replace <b>@mpdef</b> by <b>mpd-se3-servo</b></TD></TR><TR><TD>replace <b>@conttitle</b> by <b>c3</b></TD></TR></TABLE>> color=cyan4 shape=plaintext]
@@ -99,7 +120,10 @@ digraph structs {
 	defin_step_7_0_0 -> defin_step_7_1_0:f1
 	subgraph cluster_defin_7 {
 		color=darkorchid penwidth=20
-		defin_close_start_volume_7 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>close_start_volume</b></TD></TR><TR><TD>ExchPath:  <b>Expansion_name</b></TD></TR> 
+		defin_close_start_volume_7 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>close_start_volume</b></TD></TR>
+                        <TR><TD>description: Closes the starting volume depending on the stetting of Exchange/Expansion_name
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Expansion_name</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>f_l</b></TD></TR></TABLE>> color=darkorchid shape=plaintext]
 		defin_step_7_0_0 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>task name: <b>Common-run_mp</b></TD></TR><TR><TD>replace <b>@descr</b> by <b>close valve at node 5</b></TD></TR><TR><TD>replace <b>@mpdef</b> by <b>mpd-se3-servo</b></TD></TR><TR><TD>replace <b>@conttitle</b> by <b>c5</b></TD></TR></TABLE>> color=cyan4 shape=plaintext]
@@ -111,7 +135,10 @@ digraph structs {
 	defin_reset_close_start_volume_8 -> defin_step_8_0_0:f1
 	subgraph cluster_defin_8 {
 		color=darkorchid penwidth=20
-		defin_reset_close_start_volume_8 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>reset_close_start_volume</b></TD></TR><TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
+		defin_reset_close_start_volume_8 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>definition class: <b>reset_close_start_volume</b></TD></TR>
+                        <TR><TD>description: resets close start volume
+</TD></TR>
+                    <TR><TD>ExchPath:  <b>Pressure_fill.Unit</b></TD></TR> 
                              <TR><TD>operator: <b>eq</b></TD></TR> 
                              <TR><TD>Value:  <b>Pa</b></TD></TR></TABLE>> color=darkorchid shape=plaintext]
 		defin_step_8_0_0 [label=<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'><TR><TD PORT='f1'>task name: <b>Commons-select_definition</b></TD></TR><TR><TD>replace <b>@definitionclass</b> by <b>close_start_volume</b></TD></TR></TABLE>> color=blue shape=plaintext]
