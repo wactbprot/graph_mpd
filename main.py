@@ -42,9 +42,9 @@ class Draw:
         self.definitions = self.mpd.get('Definitions', [])
         self.container = self.mpd.get('Container', [])
         self.defin_class_dict={}
-        self.defin_dict={}  
-        self.cont_dict={}
-        self.label_start="<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
+        self.defin_dict = {}  
+        self.cont_dict = {}
+        self.label_start =  "<<TABLE BORDER='5' CELLBORDER='5' CELLSPACING='10'>"
         self.label_end = "</TABLE>>"
         
     def build_defin_class_dict(self):
@@ -103,6 +103,16 @@ class Draw:
         for i, cont_key in enumerate(self.cont_dict):
             for j, seq_key in enumerate(self.cont_dict[cont_key]):
                 for par_key, task in self.cont_dict[cont_key][seq_key].items():
+                    if 'Replace' in task:
+                        for k, v in task.get('Replace').items():
+                            if k == '@definitionclass':
+                                if v in self.defin_class_dict:
+                                    for h in self.defin_class_dict[v]:
+                                        self.g.edge(par_key, "defin_{}_{}".format(v, h))
+
+        for i, defin_key in enumerate(self.defin_dict):
+            for j, seq_key in enumerate(self.defin_dict[defin_key]):
+                for par_key, task in self.defin_dict[defin_key][seq_key].items():
                     if 'Replace' in task:
                         for k, v in task.get('Replace').items():
                             if k == '@definitionclass':
@@ -211,10 +221,12 @@ if __name__ == '__main__':
     draw.build_defin_class_dict()
     draw.build_defin_dict()
     draw.build_cont_dict()
+
     draw.make_cont_nodes()
     draw.make_cont_task_nodes()
     draw.make_defin_task_nodes()
     draw.make_defin_nodes()
+
     draw.connect_mp_cont()
     draw.connect_defin_task() 
     draw.connect_cont_task()
